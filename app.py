@@ -1,4 +1,6 @@
 from flask import Flask, render_template
+import init_db
+
 app = Flask(__name__)
 
 @app.route("/") #Used to redicrect user to login page when using website
@@ -34,6 +36,7 @@ def signup():
     return render_template("signup.html")
 
 if __name__ == "__main__":
+    init_db.initialize_db
     app.run(debug=True)
 
 
