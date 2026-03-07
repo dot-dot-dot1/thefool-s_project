@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Portfolio Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+margin:0;
+}
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 30px;
+background:#2f3640;
+color:white;
+}
+
+.container{
+padding:30px;
+}
+
+.portfolio-value{
+font-size:24px;
+margin-bottom:20px;
+}
+
+.add-stock{
+background:white;
+padding:20px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+margin-bottom:30px;
+width:350px;
+}
+
+input{
+padding:8px;
+margin-right:10px;
+border-radius:4px;
+border:1px solid #ccc;
+}
+
+button{
+background:#0984e3;
+color:white;
+border:none;
+padding:8px 14px;
+border-radius:4px;
+cursor:pointer;
+}
+
+button:hover{
+background:#74b9ff;
+}
+
+.stock-grid{
+display:flex;
+flex-wrap:wrap;
+gap:20px;
+}
+
+.stock-card{
+background:white;
+padding:20px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+width:220px;
+}
+
+.stock-card h3{
+margin-top:0;
+}
+
+.value{
+font-weight:bold;
+margin-top:5px;
+}
+
+.remove-btn{
+background:#e74c3c;
+margin-top:10px;
+}
+
+.remove-btn:hover{
+background:#ff7675;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+<h2>Welcome {{ username }}</h2>
+<a href="/logout" style="color:white;">Logout</a>
+</div>
+
+<div class="container">
+
+<div class="portfolio-value">
+Total Portfolio Value: <b>${{ total_portfolio }}</b>
+</div>
+
+<div class="add-stock">
+
+<h3>Add Stock</h3>
+
+<form action="/add_stock" method="POST">
+
+<input type="text" name="ticker" placeholder="Ticker (AAPL)" required>
+
+<input type="number" name="shares" placeholder="Shares" required>
+
+<button type="submit">Add</button>
+
+</form>
+
+</div>
+
+<h3>Your Stocks</h3>
+
+<div class="stock-grid">
+
+{% for stock in stocks %}
+
+<div class="stock-card">
+
+<h3>{{ stock.ticker }}</h3>
+
+<p>Shares: {{ stock.shares }}</p>
+
+<p>Price: ${{ stock.price }}</p>
+
+<p class="value">Total Value: ${{ stock.value }}</p>
+
+<form action="/remove_stock" method="POST">
+<input type="hidden" name="ticker" value="{{ stock.ticker }}">
+<button class="remove-btn" type="submit">Remove</button>
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</body>
+
+</html>

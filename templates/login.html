@@ -1,21 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Login</h2>
-<form method = "POST">
-    <label>Email:</label>
-    <input type = "email" name="email" required><br><br>
-    <!-- #name=password is the key and the variable is sent to flask in a post request body# -->
-     <label>Password:</label>
-    <input type="password" name="password" required><br><br> 
-    <button type = "submit">Login</button>
-</form>
+{% block title %}Login{% endblock %}
 
-<p>Don't have a account? <a href="/Users/flame/thefool-s_project/templates/signup.html/signup">Sign up</a></p>
+{% block content %}
+<div class="card shadow-lg p-4" style="width: 400px;">
+    <h3 class="text-center mb-4">Login</h3>
 
-</body>
-</html>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Email or Username</label>
+            <input type="text" name="login" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <div class="text-center mt-3">
+        <small>Don't have an account? <a href="/signup">Sign up</a></small>
+    </div>
+</div>
+{% endblock %}

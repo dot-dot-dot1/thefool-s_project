@@ -30,6 +30,7 @@ def init_db():
         stock_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         ticker TEXT,
+        shares INTEGER DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users(user_id)
     )
     """)
@@ -53,6 +54,7 @@ def index():
 def signup():
 
     if request.method == "POST":
+
         username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
@@ -114,7 +116,7 @@ def login():
 
 
 # -------------------------
-# HOME PAGE (STOCK DASHBOARD)
+# HOME PAGE (PORTFOLIO)
 # -------------------------
 @app.route("/home")
 def home():
@@ -126,7 +128,7 @@ def home():
     c = conn.cursor()
 
     c.execute(
-        "SELECT ticker FROM stocks WHERE user_id=?",
+        "SELECT ticker, shares FROM stocks WHERE user_id=?",
         (session["user_id"],)
     )
 
@@ -134,26 +136,40 @@ def home():
     conn.close()
 
     stocks = []
+    total_portfolio = 0
 
     for row in rows:
 
         ticker = row[0]
+        shares = row[1]
 
         try:
             stock = yf.Ticker(ticker)
-            price = stock.info.get("regularMarketPrice", "N/A")
+            price = stock.info.get("regularMarketPrice")
+
+            if price is None:
+                price = 0
+
         except:
-            price = "N/A"
+            price = 0
+
+        price = round(price, 2)
+        value = round(price * shares, 2)
+
+        total_portfolio += value
 
         stocks.append({
             "ticker": ticker,
-            "price": price
+            "shares": shares,
+            "price": price,
+            "value": value
         })
 
     return render_template(
         "home.html",
         username=session["username"],
-        stocks=stocks
+        stocks=stocks,
+        total_portfolio=round(total_portfolio, 2)
     )
 
 
@@ -167,14 +183,43 @@ def add_stock():
         return redirect(url_for("login"))
 
     ticker = request.form["ticker"].upper()
+    shares = int(request.form["shares"])
+
+    # Validate ticker
+    try:
+        stock = yf.Ticker(ticker)
+        price = stock.info.get("regularMarketPrice")
+
+        if price is None:
+            return "Invalid ticker symbol"
+
+    except:
+        return "Invalid ticker symbol"
 
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
+    # Check if stock already exists
     c.execute(
-        "INSERT INTO stocks (user_id, ticker) VALUES (?, ?)",
+        "SELECT shares FROM stocks WHERE user_id=? AND ticker=?",
         (session["user_id"], ticker)
     )
+
+    existing = c.fetchone()
+
+    if existing:
+        new_shares = existing[0] + shares
+
+        c.execute(
+            "UPDATE stocks SET shares=? WHERE user_id=? AND ticker=?",
+            (new_shares, session["user_id"], ticker)
+        )
+
+    else:
+        c.execute(
+            "INSERT INTO stocks (user_id, ticker, shares) VALUES (?, ?, ?)",
+            (session["user_id"], ticker, shares)
+        )
 
     conn.commit()
     conn.close()
@@ -221,7 +266,9 @@ def dashboard():
 # -------------------------
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     return redirect(url_for("login"))
 
 
@@ -246,5 +293,7 @@ def view_users():
 # RUN APP
 # -------------------------
 if __name__ == "__main__":
+
     init_db()
+
     app.run(debug=True)

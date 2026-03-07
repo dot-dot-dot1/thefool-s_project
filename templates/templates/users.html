@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Users</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+        }
+
+        table {
+            width: 60%;
+            margin: 50px auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Registered Users</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user[0] }}</td>
+        <td>{{ user[1] }}</td>
+        <td>{{ user[2] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>

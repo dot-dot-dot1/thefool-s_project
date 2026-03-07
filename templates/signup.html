@@ -1,16 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign up</title>
-</head>
-</html>
+{% extends "base.html" %}
 
-<h2>Sign Up</h2>
+{% block title %}Sign Up{% endblock %}
 
+{% block content %}
+<div class="card shadow-lg p-4" style="width: 400px;">
+    <h3 class="text-center mb-4">Create Account</h3>
 
-<form method = "POST">
-    <label>Emial:</label>
-    <input type = "email" name = "email" requried><br><br>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
 
-    
-</form>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Sign Up</button>
+    </form>
+
+    <div class="text-center mt-3">
+        <small>Already have an account? <a href="/login">Login</a></small>
+    </div>
+</div>
+{% endblock %}
