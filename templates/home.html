@@ -1,248 +1,625 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Portfolio Dashboard</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-font-family:Arial;
-background:#f4f6f9;
-margin:0;
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f4f6f9;
+  color: #1a1d23;
 }
 
-.navbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px 30px;
-background:#2f3640;
-color:white;
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #2f3640;
+  color: white;
 }
 
-.navbar a{
-color:white;
-text-decoration:none;
+.navbar h2 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
 }
 
-.container{
-padding:30px;
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 16px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  transition: background 0.2s;
 }
 
-.portfolio-value{
-font-size:24px;
-margin-bottom:20px;
+.navbar a:hover { background: rgba(255,255,255,0.1); }
+
+/* CONTAINER */
+.container { padding: 28px 30px; max-width: 1300px; margin: 0 auto; }
+
+/* SUMMARY STRIP */
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
-.dashboard{
-display:flex;
-gap:40px;
-flex-wrap:wrap;
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
-.left-panel{
-flex:2;
+.summary-card .s-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #9ca3af;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
-.right-panel{
-flex:1;
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-height:350px;
+.summary-card .s-amount {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1d23;
+  letter-spacing: -0.5px;
 }
 
-.add-stock{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-margin-bottom:30px;
-width:350px;
+.summary-card .s-sub {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #9ca3af;
 }
 
-input{
-padding:8px;
-margin-right:10px;
-border-radius:4px;
-border:1px solid #ccc;
+.pos { color: #10b981 !important; }
+.neg { color: #ef4444 !important; }
+
+/* LAYOUT */
+.dashboard {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
 }
 
-button{
-background:#0984e3;
-color:white;
-border:none;
-padding:8px 14px;
-border-radius:4px;
-cursor:pointer;
+.left-panel { flex: 2; min-width: 0; }
+.right-panel {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  height: fit-content;
 }
 
-button:hover{
-background:#74b9ff;
+.right-panel h3 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #9ca3af;
+  margin-bottom: 16px;
 }
 
-.stock-grid{
-display:flex;
-flex-wrap:wrap;
-gap:20px;
+/* ADD STOCK */
+.add-stock {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 22px;
 }
 
-.stock-card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-width:220px;
-transition:0.2s;
-cursor:pointer;
+.add-stock h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #374151;
 }
 
-.stock-card:hover{
-transform:translateY(-5px);
-box-shadow:0 6px 18px rgba(0,0,0,0.15);
+.form-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.stock-card h3{
-margin-top:0;
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #1a1d23;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #f9fafb;
 }
 
-.value{
-font-weight:bold;
-margin-top:5px;
+input:focus { border-color: #0984e3; background: white; }
+input[type="text"] { width: 110px; }
+input[type="number"] { width: 90px; }
+input[type="date"] { width: 160px; }
+
+button, .btn {
+  background: #0984e3;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.remove-btn{
-background:#e74c3c;
-margin-top:10px;
+button:hover, .btn:hover { background: #0773c5; }
+
+.btn-red { background: #ef4444; }
+.btn-red:hover { background: #dc2626; }
+
+.btn-ghost {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
-.remove-btn:hover{
-background:#ff7675;
+.btn-ghost:hover { border-color: #0984e3; color: #0984e3; background: white; }
+
+/* SORT BAR */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
-.chart-title{
-margin-bottom:10px;
-text-align:center;
+.sort-bar .sort-label {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
 }
 
+.sort-btn {
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 5px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.sort-btn:hover { border-color: #0984e3; color: #0984e3; }
+.sort-btn.active { background: #0984e3; color: white; border-color: #0984e3; }
+
+.save-order-btn {
+  margin-left: auto;
+  background: white;
+  color: #10b981;
+  border: 1px solid #10b981;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: none;
+  transition: all 0.2s;
+}
+
+.save-order-btn:hover { background: #10b981; color: white; }
+
+/* STOCK CARDS */
+.stock-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.stock-card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  width: 220px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: grab;
+  position: relative;
+}
+
+.stock-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.11);
+}
+
+.stock-card .drag-handle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #d1d5db;
+  font-size: 16px;
+  cursor: grab;
+}
+
+.stock-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-bottom: 2px;
+}
+
+.stock-card .stock-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.stock-card p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.stock-card .value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1d23;
+  margin-top: 8px;
+}
+
+.gain-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.gain-row .gain-label { color: #9ca3af; }
+
+.card-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: 14px;
+  padding: 28px;
+  width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.modal h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1a1d23;
+}
+
+.field { margin-bottom: 14px; }
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.field input { width: 100%; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ERROR TOAST */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ef4444;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(239,68,68,0.35);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideDown 0.3s ease;
+}
+
+.toast button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.toast button:hover { opacity: 1; background: none; }
+
+@keyframes slideDown {
+  from { top: 0; opacity: 0; }
+  to { top: 24px; opacity: 1; }
+}
 </style>
-
 </head>
 
 <body>
 
+{% if request.args.get('error') %}
+<div class="toast" id="errorToast">
+  ⚠ {{ request.args.get('error') }}
+  <button onclick="document.getElementById('errorToast').remove()">✕</button>
+</div>
+<script>
+  setTimeout(() => {
+    const t = document.getElementById('errorToast');
+    if (t) t.remove();
+  }, 4000);
+</script>
+{% endif %}
+
 <div class="navbar">
-<h2>Welcome {{ username }}</h2>
-<a href="/logout">Logout</a>
+  <h2>👋 Welcome, {{ username }}</h2>
+  <a href="/logout">Logout</a>
 </div>
 
 <div class="container">
 
-<div class="portfolio-value">
-Total Portfolio Value: <b>${{ total_portfolio }}</b>
+  <!-- SUMMARY STRIP -->
+  <div class="summary-strip">
+    <div class="summary-card">
+      <div class="s-label">Portfolio Value</div>
+      <div class="s-amount">${{ total_portfolio }}</div>
+      <div class="s-sub">Book: ${{ total_book }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Daily Gain / Loss</div>
+      <div class="s-amount {% if total_daily_gain >= 0 %}pos{% else %}neg{% endif %}">
+        {% if total_daily_gain >= 0 %}+{% endif %}${{ total_daily_gain }}
+      </div>
+      <div class="s-sub {% if total_daily_gain_pct >= 0 %}pos{% else %}neg{% endif %}">
+        {% if total_daily_gain_pct >= 0 %}+{% endif %}{{ total_daily_gain_pct }}% today
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Total Gain / Loss</div>
+      <div class="s-amount {% if total_cumulative_gain >= 0 %}pos{% else %}neg{% endif %}">
+        {% if total_cumulative_gain >= 0 %}+{% endif %}${{ total_cumulative_gain }}
+      </div>
+      <div class="s-sub {% if total_cumulative_pct >= 0 %}pos{% else %}neg{% endif %}">
+        {% if total_cumulative_pct >= 0 %}+{% endif %}{{ total_cumulative_pct }}% all time
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Positions</div>
+      <div class="s-amount">{{ stocks|length }}</div>
+      <div class="s-sub">holdings</div>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="left-panel">
+
+      <!-- ADD STOCK -->
+      <div class="add-stock">
+        <h3>Add Position</h3>
+        <form action="/add_stock" method="POST">
+          <div class="form-row">
+            <input type="text" name="ticker" placeholder="Ticker (AAPL)" required>
+            <input type="number" name="shares" placeholder="Shares" step="0.01" required>
+            <input type="date" name="purchase_date" title="Purchase date">
+            <button type="submit">Add</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- SORT BAR -->
+      <div class="sort-bar">
+        <span class="sort-label">Sort by:</span>
+        <a class="sort-btn {% if sort_by == 'display_order' %}active{% endif %}" href="?sort=display_order">Custom</a>
+        <a class="sort-btn {% if sort_by == 'value' %}active{% endif %}" href="?sort=value">Value</a>
+        <a class="sort-btn {% if sort_by == 'daily_gain_pct' %}active{% endif %}" href="?sort=daily_gain_pct">Daily %</a>
+        <a class="sort-btn {% if sort_by == 'cumulative_gain_pct' %}active{% endif %}" href="?sort=cumulative_gain_pct">All-time %</a>
+        <a class="sort-btn {% if sort_by == 'ticker' %}active{% endif %}" href="?sort=ticker">A–Z</a>
+        <button class="save-order-btn" id="saveOrderBtn" onclick="saveOrder()">✓ Save Order</button>
+      </div>
+
+      <!-- STOCK CARDS -->
+      <div class="stock-grid" id="stockGrid">
+        {% for stock in stocks %}
+        <div class="stock-card" data-ticker="{{ stock.ticker }}">
+          <span class="drag-handle">⠿</span>
+
+          <a class="stock-link" href="/stock/{{ stock.ticker }}">
+            <h3>{{ stock.ticker }}</h3>
+          </a>
+
+          <p>{{ stock.shares }} shares @ ${{ stock.purchase_price }}</p>
+          <p>Price: <b>${{ stock.price }}</b></p>
+          <p class="value">Value: ${{ stock.value }}</p>
+
+          <div class="gain-row">
+            <span class="gain-label">Daily</span>
+            <span class="{% if stock.daily_gain_dollar >= 0 %}pos{% else %}neg{% endif %}">
+              {% if stock.daily_gain_dollar >= 0 %}+{% endif %}${{ stock.daily_gain_dollar }}
+              ({% if stock.daily_gain_pct >= 0 %}+{% endif %}{{ stock.daily_gain_pct }}%)
+            </span>
+          </div>
+          <div class="gain-row">
+            <span class="gain-label">All-time</span>
+            <span class="{% if stock.cumulative_gain_dollar >= 0 %}pos{% else %}neg{% endif %}">
+              {% if stock.cumulative_gain_dollar >= 0 %}+{% endif %}${{ stock.cumulative_gain_dollar }}
+              ({% if stock.cumulative_gain_pct >= 0 %}+{% endif %}{{ stock.cumulative_gain_pct }}%)
+            </span>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-ghost" onclick="openEdit('{{ stock.ticker }}', {{ stock.shares }}, {{ stock.purchase_price }}, '{{ stock.purchase_date }}')">Edit</button>
+            <form action="/remove_stock" method="POST" style="display:inline">
+              <input type="hidden" name="ticker" value="{{ stock.ticker }}">
+              <button class="btn btn-red" type="submit" style="padding:6px 12px;font-size:13px;">Remove</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL: PIE CHART -->
+    <div class="right-panel">
+      <h3>Allocation</h3>
+      <canvas id="portfolioChart"></canvas>
+    </div>
+  </div>
 </div>
 
-<div class="dashboard">
-
-<div class="left-panel">
-
-<div class="add-stock">
-
-<h3>Add Stock</h3>
-
-<form action="/add_stock" method="POST">
-
-<input type="text" name="ticker" placeholder="Ticker (AAPL)" required>
-
-<input type="number" name="shares" placeholder="Shares" required>
-
-<button type="submit">Add</button>
-
-</form>
-
-</div>
-
-<h3>Your Stocks</h3>
-
-<div class="stock-grid">
-
-{% for stock in stocks %}
-
-<a href="/stock/{{ stock.ticker }}" style="text-decoration:none;color:black;">
-
-<div class="stock-card">
-
-<h3>{{ stock.ticker }}</h3>
-
-<p>Shares: {{ stock.shares }}</p>
-
-<p>Price: ${{ stock.price }}</p>
-
-<p class="value">Total Value: ${{ stock.value }}</p>
-
-<form action="/remove_stock" method="POST" onclick="event.stopPropagation();">
-
-<input type="hidden" name="ticker" value="{{ stock.ticker }}">
-
-<button class="remove-btn" type="submit">Remove</button>
-
-</form>
-
-</div>
-
-</a>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-<div class="right-panel">
-
-<h3 class="chart-title">Portfolio Allocation</h3>
-
-<canvas id="portfolioChart"></canvas>
-
-</div>
-
-</div>
-
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>Edit Position</h3>
+    <form action="/edit_stock" method="POST">
+      <input type="hidden" name="ticker" id="editTicker">
+      <div class="field">
+        <label>Ticker</label>
+        <input type="text" id="editTickerDisplay" disabled style="color:#9ca3af; background:#f9fafb;">
+      </div>
+      <div class="field">
+        <label>Shares</label>
+        <input type="number" name="shares" id="editShares" step="0.01" required>
+      </div>
+      <div class="field">
+        <label>Purchase Price ($)</label>
+        <input type="number" name="purchase_price" id="editPrice" step="0.01" required>
+      </div>
+      <div class="field">
+        <label>Purchase Date</label>
+        <input type="date" name="purchase_date" id="editDate" required>
+      </div>
+      <div class="modal-actions">
+        <button type="submit">Save Changes</button>
+        <button class="btn-ghost" type="button" onclick="closeEdit()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
+// PIE CHART
+const tickers = [{% for s in stocks %}"{{ s.ticker }}",{% endfor %}];
+const values  = [{% for s in stocks %}{{ s.value }},{% endfor %}];
 
-const tickers = [
-{% for stock in stocks %}
-"{{ stock.ticker }}",
-{% endfor %}
-];
-
-const values = [
-{% for stock in stocks %}
-{{ stock.value }},
-{% endfor %}
-];
-
-const ctx = document.getElementById('portfolioChart');
-
-new Chart(ctx, {
-type: 'pie',
-data: {
-labels: tickers,
-datasets: [{
-data: values
-}]
-},
-options: {
-responsive:true
-}
+new Chart(document.getElementById('portfolioChart'), {
+  type: 'pie',
+  data: {
+    labels: tickers,
+    datasets: [{
+      data: values,
+      backgroundColor: ['#0984e3','#00b894','#fdcb6e','#e17055','#a29bfe','#74b9ff','#55efc4','#fd79a8'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { font: { family: 'DM Sans', size: 12 }, padding: 14, boxWidth: 12 }
+      }
+    }
+  }
 });
 
+// DRAG TO REORDER
+const grid = document.getElementById('stockGrid');
+
+Sortable.create(grid, {
+  handle: '.drag-handle',
+  animation: 150,
+  onEnd: () => {
+    document.getElementById('saveOrderBtn').style.display = 'inline-block';
+  }
+});
+
+async function saveOrder() {
+  const cards = grid.querySelectorAll('.stock-card');
+  const order = Array.from(cards).map(c => c.dataset.ticker);
+  await fetch('/save_order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ order })
+  });
+  document.getElementById('saveOrderBtn').style.display = 'none';
+}
+
+// EDIT MODAL
+function openEdit(ticker, shares, price, date) {
+  document.getElementById('editTicker').value = ticker;
+  document.getElementById('editTickerDisplay').value = ticker;
+  document.getElementById('editShares').value = shares;
+  document.getElementById('editPrice').value = price;
+  document.getElementById('editDate').value = date;
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('open');
+}
+
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEdit();
+});
 </script>
 
 </body>
