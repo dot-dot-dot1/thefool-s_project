@@ -43,6 +43,204 @@ body {
 
 .navbar a:hover { background: rgba(255,255,255,0.1); }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* SETTINGS DROPDOWN */
+.settings-wrap { position: relative; }
+
+.settings-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.settings-btn:hover { background: rgba(255,255,255,0.2); }
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 500;
+}
+
+.dropdown-menu.open { display: block; animation: fadeIn 0.15s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+
+.dropdown-item:hover { background: #f9fafb; color: #374151; }
+.dropdown-item.danger { color: #ef4444; }
+.dropdown-item.danger:hover { background: #fef2f2; }
+.dropdown-divider { height: 1px; background: #f3f4f6; }
+
+/* NOTIFICATION BELL */
+.bell-wrap { position: relative; }
+
+.bell-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.bell-btn:hover { background: rgba(255,255,255,0.2); }
+
+.bell-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  border: 2px solid #2f3640;
+}
+
+.notif-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  width: 320px;
+  z-index: 500;
+  overflow: hidden;
+}
+
+.notif-dropdown.open { display: block; animation: fadeIn 0.15s ease; }
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.notif-header span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.notif-mark-all {
+  font-size: 11px;
+  color: #0984e3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  padding: 0;
+}
+
+.notif-mark-all:hover { text-decoration: underline; background: none; color: #0984e3; }
+
+.notif-list { max-height: 320px; overflow-y: auto; }
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f9fafb;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.notif-item:hover { background: #f9fafb; }
+.notif-item.unread { background: #eff6ff; }
+.notif-item.unread:hover { background: #dbeafe; }
+
+.notif-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0984e3;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.notif-dot.read { background: transparent; }
+
+.notif-content { flex: 1; }
+
+.notif-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1d23;
+}
+
+.notif-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 3px;
+}
+
+.notif-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
 /* CONTAINER */
 .container { padding: 28px 30px; max-width: 1300px; margin: 0 auto; }
 
@@ -400,17 +598,73 @@ button:hover, .btn:hover { background: #0773c5; }
   ⚠ {{ request.args.get('error') }}
   <button onclick="document.getElementById('errorToast').remove()">✕</button>
 </div>
-<script>
-  setTimeout(() => {
-    const t = document.getElementById('errorToast');
-    if (t) t.remove();
-  }, 4000);
-</script>
+<script>setTimeout(() => { const t = document.getElementById('errorToast'); if (t) t.remove(); }, 4000);</script>
+{% endif %}
+
+{% if request.args.get('success') %}
+<div class="toast" id="successToast" style="background:#10b981;">
+  ✓ {{ request.args.get('success') }}
+  <button onclick="document.getElementById('successToast').remove()">✕</button>
+</div>
+<script>setTimeout(() => { const t = document.getElementById('successToast'); if (t) t.remove(); }, 4000);</script>
 {% endif %}
 
 <div class="navbar">
-  <h2>👋 Welcome, {{ username }}</h2>
-  <a href="/logout">Logout</a>
+  <h2 id="greeting">👋 Welcome, {{ username }}</h2>
+  <div class="navbar-right">
+      <!-- NOTIFICATION BELL -->
+      <div class="bell-wrap">
+        <button class="bell-btn" onclick="toggleBell()" title="Notifications">
+          🔔
+          {% if unread_count > 0 %}
+          <span class="bell-badge">{{ unread_count if unread_count < 100 else '99+' }}</span>
+          {% endif %}
+        </button>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-header">
+            <span>Notifications</span>
+            {% if notifications %}
+            <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
+            {% endif %}
+          </div>
+          <div class="notif-list" id="notifList">
+            {% if notifications %}
+              {% for n in notifications %}
+              <div class="notif-item {% if not n.is_read %}unread{% endif %}" id="notif-{{ n.id }}" onclick="markRead({{ n.id }})">
+                <div class="notif-dot {% if n.is_read %}read{% endif %}"></div>
+                <div class="notif-content">
+                  <div class="notif-title">
+                    {{ n.ticker }} — {% if n.alert_type == 'daily' %}Daily{% else %}All-time{% endif %} Alert
+                  </div>
+                  <div class="notif-sub">
+                    Moved <strong style="color:{% if n.change_pct >= 0 %}#10b981{% else %}#ef4444{% endif %}">
+                      {% if n.change_pct >= 0 %}+{% endif %}{{ "%.2f"|format(n.change_pct) }}%
+                    </strong>
+                    · Value: ${{ "%.2f"|format(n.value) }}
+                  </div>
+                  <div class="notif-time">{{ n.created_at }}</div>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="notif-empty">No notifications yet</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    <div class="settings-wrap">
+      <button class="settings-btn" onclick="toggleDropdown()">⚙ Settings ▾</button>
+      <div class="dropdown-menu" id="settingsDropdown">
+        <button class="dropdown-item" onclick="openModal('usernameModal'); closeDropdown()">✏️ Change Username</button>
+        <button class="dropdown-item" onclick="openModal('passwordModal'); closeDropdown()">🔒 Change Password</button>
+        <button class="dropdown-item" onclick="openModal('alertModal'); closeDropdown()">🔔 Alert Threshold</button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" onclick="openModal('deleteModal'); closeDropdown()">🗑 Delete Account</button>
+      </div>
+    </div>
+    <a href="/logout">Logout</a>
+  </div>
 </div>
 
 <div class="container">
@@ -524,6 +778,94 @@ button:hover, .btn:hover { background: #0773c5; }
   </div>
 </div>
 
+<!-- CHANGE USERNAME MODAL -->
+<div class="modal-overlay" id="usernameModal">
+  <div class="modal">
+    <h3>Change Username</h3>
+    <form action="/change_username" method="POST">
+      <div class="field">
+        <label>New Username</label>
+        <input type="text" name="new_username" required placeholder="Enter new username">
+      </div>
+      <div class="field">
+        <label>Current Password</label>
+        <input type="password" name="password" required placeholder="Confirm your password">
+      </div>
+      <div class="modal-actions">
+        <button type="submit">Save</button>
+        <button class="btn-ghost" type="button" onclick="closeModal('usernameModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay" id="passwordModal">
+  <div class="modal">
+    <h3>Change Password</h3>
+    <form action="/change_password" method="POST">
+      <div class="field">
+        <label>Current Password</label>
+        <input type="password" name="current_password" required placeholder="Current password">
+      </div>
+      <div class="field">
+        <label>New Password</label>
+        <input type="password" name="new_password" required placeholder="New password">
+      </div>
+      <div class="field">
+        <label>Confirm New Password</label>
+        <input type="password" name="confirm_password" required placeholder="Repeat new password">
+      </div>
+      <div class="modal-actions">
+        <button type="submit">Save</button>
+        <button class="btn-ghost" type="button" onclick="closeModal('passwordModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DELETE ACCOUNT MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3 style="color:#ef4444;">Delete Account</h3>
+    <p style="font-size:14px;color:#6b7280;margin-bottom:20px;">This will permanently delete your account and all your portfolio data. This cannot be undone.</p>
+    <form action="/delete_account" method="POST">
+      <div class="field">
+        <label>Type your username to confirm</label>
+        <input type="text" name="confirm_username" required placeholder="{{ username }}">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="Your password">
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-red">Delete My Account</button>
+        <button class="btn-ghost" type="button" onclick="closeModal('deleteModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ALERT THRESHOLD MODAL -->
+<div class="modal-overlay" id="alertModal">
+  <div class="modal">
+    <h3>🔔 Stock Alert Threshold</h3>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:20px;">You'll get an email when any stock moves more than this % — either today or since you bought it.</p>
+    <form action="/update_threshold" method="POST">
+      <div class="field">
+        <label>Alert Threshold (%)</label>
+        <input type="number" name="alert_threshold" step="0.1" min="0.1" max="100"
+               value="{{ alert_threshold }}" required placeholder="e.g. 5">
+      </div>
+      <p style="font-size:12px;color:#9ca3af;margin-top:-8px;margin-bottom:16px;">Current: {{ alert_threshold }}% — set to 0 to disable alerts</p>
+      <div class="modal-actions">
+        <button type="submit">Save</button>
+        <button class="btn-ghost" type="button" onclick="closeModal('alertModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
@@ -619,6 +961,112 @@ function closeEdit() {
 
 document.getElementById('editModal').addEventListener('click', function(e) {
   if (e.target === this) closeEdit();
+});
+
+// GREETING
+(function() {
+  const username = {{ username | tojson }};
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const totalMins = h * 60 + m;
+
+  let greeting;
+  
+  if ((h === 1 && m === 43)) {
+    greeting = `💡 Welcome to white space. You've been living here for as long as you can remember. ${username}`;
+  } else if ((h === 13 && m === 43)) {
+    greeting = `💡 Welcome to white space, you've been living here for as long as you can remember. ${username}`;
+
+  } else if (h >= 22 || h < 6) {
+    greeting = `🌕 oyasumi, ${username}`;
+
+  } else if (h >= 6 && h < 9) {
+    greeting = `good morning :) ${username}`;
+  
+  } else {
+    greeting = `👋 Welcome, ${username}`;
+  }
+
+  document.getElementById('greeting').textContent = greeting;
+})();
+
+// NOTIFICATION BELL
+function toggleBell() {
+  const dropdown = document.getElementById('notifDropdown');
+  dropdown.classList.toggle('open');
+  closeDropdown(); // close settings if open
+}
+
+function closeBell() {
+  document.getElementById('notifDropdown').classList.remove('open');
+}
+
+async function markRead(id) {
+  const item = document.getElementById('notif-' + id);
+  if (!item) return;
+  item.classList.remove('unread');
+  item.querySelector('.notif-dot').classList.add('read');
+  await fetch('/mark_read/' + id, { method: 'POST' });
+  updateBadge(-1);
+}
+
+async function markAllRead() {
+  document.querySelectorAll('.notif-item.unread').forEach(el => {
+    el.classList.remove('unread');
+    el.querySelector('.notif-dot').classList.add('read');
+  });
+  await fetch('/mark_all_read', { method: 'POST' });
+  updateBadge(0, true);
+}
+
+function updateBadge(delta, clearAll = false) {
+  const badge = document.querySelector('.bell-badge');
+  if (clearAll) {
+    if (badge) badge.remove();
+    return;
+  }
+  if (!badge) return;
+  const current = parseInt(badge.textContent) || 0;
+  const newCount = Math.max(0, current + delta);
+  if (newCount === 0) badge.remove();
+  else badge.textContent = newCount > 99 ? '99+' : newCount;
+}
+
+// Close bell if clicking outside
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.bell-wrap');
+  if (wrap && !wrap.contains(e.target)) closeBell();
+});
+
+// SETTINGS DROPDOWN
+function toggleDropdown() {
+  document.getElementById('settingsDropdown').classList.toggle('open');
+}
+
+function closeDropdown() {
+  document.getElementById('settingsDropdown').classList.remove('open');
+}
+
+// Close dropdown if clicking outside
+document.addEventListener('click', function(e) {
+  const settingsWrap = document.querySelector('.settings-wrap');
+  if (settingsWrap && !settingsWrap.contains(e.target)) closeDropdown();
+});
+
+// SETTINGS MODALS
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+['usernameModal','passwordModal','deleteModal','alertModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeModal(id);
+  });
 });
 </script>
 
