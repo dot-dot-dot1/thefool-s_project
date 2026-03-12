@@ -12,15 +12,17 @@ import pytz
 app = Flask(__name__)
 app.secret_key = "super_secret_key_change_this"
 
+# -------------------------
 # EMAIL CONFIG — fill these in
-
+# -------------------------
 GMAIL_ADDRESS = "your_gmail@gmail.com"
 GMAIL_APP_PASSWORD = "your_app_password_here"  # Google App Password, not your real password
 
 
 
+# -------------------------
 # DATABASE INITIALIZATION
-
+# -------------------------
 def init_db():
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
@@ -191,7 +193,7 @@ def check_prices():
 
 
 # HELPER: GET STOCK PRICES
-
+# -------------------------
 def get_stock_prices(ticker):
     try:
         info = yf.Ticker(ticker).fast_info
@@ -202,14 +204,17 @@ def get_stock_prices(ticker):
         return 0, 0
 
 
+# -------------------------
 # HOME REDIRECT
-
+# -------------------------
 @app.route("/")
 def index():
     return redirect(url_for("login"))
 
-# SIGNUP
 
+# -------------------------
+# SIGNUP
+# -------------------------
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -239,8 +244,9 @@ def signup():
     return render_template("signup.html")
 
 
+# -------------------------
 # LOGIN
-
+# -------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -266,8 +272,9 @@ def login():
     return render_template("login.html")
 
 
+# -------------------------
 # HOME PAGE (PORTFOLIO)
-
+# -------------------------
 @app.route("/home")
 def home():
     if "user_id" not in session:
@@ -375,8 +382,9 @@ def home():
     )
 
 
+# -------------------------
 # ADD STOCK
-
+# -------------------------
 @app.route("/add_stock", methods=["POST"])
 def add_stock():
     if "user_id" not in session:
@@ -399,8 +407,10 @@ def add_stock():
             hist = yf.Ticker(ticker).history(start=purchase_date, end=end_date)
             if not hist.empty:
                 purchase_price = round(hist["Close"].iloc[0], 2)
+            else:
+                return redirect(url_for("home", error=f"No historical data found for {ticker} on {purchase_date}. Try a more recent date."))
         except:
-            purchase_price = current_price
+            return redirect(url_for("home", error=f"Could not fetch historical data for {ticker} on {purchase_date}. Try a more recent date."))
 
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
@@ -426,8 +436,10 @@ def add_stock():
     conn.close()
     return redirect(url_for("home"))
 
-# REMOVE STOCK
 
+# -------------------------
+# REMOVE STOCK
+# -------------------------
 @app.route("/remove_stock", methods=["POST"])
 def remove_stock():
     if "user_id" not in session:
@@ -442,9 +454,9 @@ def remove_stock():
     return redirect(url_for("home"))
 
 
-
+# -------------------------
 # EDIT STOCK
-
+# -------------------------
 @app.route("/edit_stock", methods=["POST"])
 def edit_stock():
     if "user_id" not in session:
@@ -466,8 +478,9 @@ def edit_stock():
     return redirect(url_for("home"))
 
 
+# -------------------------
 # CHANGE USERNAME
-
+# -------------------------
 @app.route("/change_username", methods=["POST"])
 def change_username():
     if "user_id" not in session:
@@ -496,8 +509,10 @@ def change_username():
     conn.close()
     return redirect(url_for("home", success="Username updated successfully."))
 
-# CHANGE PASSWORD
 
+# -------------------------
+# CHANGE PASSWORD
+# -------------------------
 @app.route("/change_password", methods=["POST"])
 def change_password():
     if "user_id" not in session:
@@ -659,28 +674,24 @@ def stock_history(ticker):
         return jsonify({"error": "Could not fetch history"}), 500
 
 
-# -------------------------
 # DASHBOARD
-# -------------------------
+
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
     return render_template("dashboard.html")
 
-
-# -------------------------
 # LOGOUT
-# -------------------------
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
 
-# -------------------------
 # VIEW USERS (DEBUG PAGE)
-# -------------------------
+
 @app.route("/users")
 def view_users():
     conn = sqlite3.connect("database.db")
@@ -691,9 +702,8 @@ def view_users():
     return render_template("users.html", users=users)
 
 
-# -------------------------
 # MARK NOTIFICATION READ
-# -------------------------
+
 @app.route("/mark_read/<int:notif_id>", methods=["POST"])
 def mark_read(notif_id):
     if "user_id" not in session:
@@ -706,9 +716,8 @@ def mark_read(notif_id):
     return jsonify({"success": True})
 
 
-# -------------------------
 # MARK ALL NOTIFICATIONS READ
-# -------------------------
+
 @app.route("/mark_all_read", methods=["POST"])
 def mark_all_read():
     if "user_id" not in session:
@@ -727,9 +736,8 @@ def test_alert():
     return "Alert check ran — check your email and terminal."
 
 
-# -------------------------
 # UPDATE ALERT THRESHOLD
-# -------------------------
+
 @app.route("/update_threshold", methods=["POST"])
 def update_threshold():
     if "user_id" not in session:
@@ -751,9 +759,8 @@ def update_threshold():
     return redirect(url_for("home", success=f"Alert threshold set to {threshold}%."))
 
 
-# -------------------------
 # RUN APP
-# -------------------------
+
 if __name__ == "__main__":
     init_db()
 
